@@ -102,6 +102,18 @@ void OSMWay::set_forward_speed(const float forward_speed) {
   }
 }
 
+// Sets the bikeability.
+void OSMWay::set_bikeability(const float bikeability) {
+  // if (speed > kMaxOSMSpeed) {
+  //   LOG_WARN("Exceeded max truck speed for way id: " + std::to_string(osmwayid_));
+  //   truck_speed_ = kMaxOSMSpeed;
+  // } else {
+  float min_value = 0.0f;
+  float max_value = 10.0f;
+  bikeability_ = (uint64_t)roundf((bikeability - min_value) / (max_value - min_value) * 7.0f);
+  // }
+}
+
 // Sets the truck speed in KPH.
 void OSMWay::set_truck_speed(const float speed) {
   if (speed > kMaxOSMSpeed) {

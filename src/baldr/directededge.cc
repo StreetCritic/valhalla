@@ -567,6 +567,14 @@ void DirectedEdge::set_max_up_slope(const float slope) {
   }
 }
 
+void DirectedEdge::set_bikeability(const uint32_t grade) {
+  if (grade > 7) {
+    LOG_ERROR("Exceeding max. bikeability grade: " + std::to_string(grade));
+  } else {
+    bikeability_ = grade;
+  }
+}
+
 // Sets the maximum downward slope. If slope is positive, 0 is set.
 void DirectedEdge::set_max_down_slope(const float slope) {
   if (slope > 0.0f) {

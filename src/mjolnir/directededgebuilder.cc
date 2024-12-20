@@ -33,6 +33,8 @@ DirectedEdgeBuilder::DirectedEdgeBuilder(const OSMWay& way,
   set_speed(speed);             // KPH
   set_truck_speed(truck_speed); // KPH
 
+  set_bikeability(way.bikeability());
+
   // Protect against 0 length edges
   set_length(std::max(length, kMinimumEdgeLength), true);
 

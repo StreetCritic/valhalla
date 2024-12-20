@@ -222,6 +222,20 @@ public:
    */
   void set_max_down_slope(const float slope);
 
+
+  /**
+   * Set bikeability (0-7)
+   */
+  void set_bikeability(const uint32_t grade);
+
+  /**
+   * Get the bikeability grade.
+   * @return  Returns the bikeability grade (0-7).
+   */
+  uint32_t bikeability() const {
+    return bikeability_;
+  }
+
   /**
    * Get the road curvature factor.
    * @return  Returns the curvature factor (0-15).
@@ -1260,7 +1274,8 @@ protected:
   uint64_t indoor_ : 1;         // Is this edge indoor
   uint64_t lit_ : 1;            // Is the edge lit?
   uint64_t dest_only_hgv_ : 1;  // destonly for HGV specifically
-  uint64_t spare4_ : 3;
+  uint64_t bikeability_ : 3;
+  // uint64_t spare4_ : 0;
 
   // 5th 8-byte word
   uint64_t turntype_ : 24;      // Turn type (see graphconstants.h)

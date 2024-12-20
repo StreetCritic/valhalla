@@ -109,6 +109,12 @@ struct OSMWay {
     return forward_speed_;
   }
 
+  void set_bikeability(const float bikeability);
+
+  uint8_t bikeability() const {
+    return bikeability_;
+  }
+
   /**
    * Sets the truck speed
    * @param  speed   Truck speed in KPH.
@@ -2733,6 +2739,8 @@ struct OSMWay {
 
   // layer index(Z-level) of the way relatively to other levels
   int8_t layer_;
+
+  uint8_t bikeability_;
 };
 
 } // namespace mjolnir

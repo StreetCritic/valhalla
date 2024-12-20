@@ -925,6 +925,14 @@ public:
         LOG_INFO("out_of_range thrown for way id: " + std::to_string(osmid_));
       }
     };
+    tag_handlers_["streetcritic:indicator:bikeability"] = [this]() {
+      try {
+        way_.set_bikeability(std::stof(tag_.second));
+      } catch (const std::out_of_range& oor) {
+        LOG_INFO("out_of_range thrown for way id: " + std::to_string(osmid_));
+      }
+    };
+
     tag_handlers_["maxspeed:hgv"] = [this]() {
       try {
         way_.set_truck_speed(std::stof(tag_.second));
