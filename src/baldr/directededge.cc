@@ -571,7 +571,8 @@ void DirectedEdge::set_bikeability(const uint32_t grade) {
   if (grade > 7) {
     LOG_ERROR("Exceeding max. bikeability grade: " + std::to_string(grade));
   } else {
-    bikeability_ = grade;
+    // bikeability_ = grade;
+    spare4_ = grade;
   }
 }
 
@@ -610,6 +611,8 @@ json::MapPtr DirectedEdge::json() const {
       //{"opp_index", static_cast<bool>(opp_index_)},
       //{"edge_info_offset", static_cast<uint64_t>(edgeinfo_offset_)},
       //{"restrictions", restrictions_},
+      {"bikeability", static_cast<uint64_t>(spare4_)},
+      // {"bikeability", static_cast<uint64_t>(bikeability_)},
       {"access_restriction", static_cast<bool>(access_restriction_)},
       {"start_restriction", access_json(start_restriction_)},
       {"end_restriction", access_json(end_restriction_)},
