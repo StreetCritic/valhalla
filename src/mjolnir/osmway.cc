@@ -109,7 +109,7 @@ void OSMWay::set_bikeability(const float bikeability) {
   //   truck_speed_ = kMaxOSMSpeed;
   // } else {
   float min_value = 0.0f;
-  float max_value = 10.0f;
+  float max_value = 1.0f;
   bikeability_ = (uint64_t)roundf((bikeability - min_value) / (max_value - min_value) * 7.0f);
   // }
 }
