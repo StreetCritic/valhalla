@@ -71,6 +71,9 @@ if(APPLE)
   list(APPEND system_includes ${VALHALLA_SOURCE_DIR}/third_party/date/include/date)
 endif()
 
+add_compile_options(-Wno-error=maybe-uninitialized)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=maybe-uninitialized")
+
 valhalla_module(NAME mjolnir
   SOURCES ${sources}
   HEADERS ${headers}

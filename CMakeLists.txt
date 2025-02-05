@@ -306,6 +306,9 @@ if(ENABLE_DATA_TOOLS)
       ${VALHALLA_SOURCE_DIR}/src/mjolnir/statistics_database.cc)
 endif()
 
+add_compile_options(-Wno-error=maybe-uninitialized)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=maybe-uninitialized")
+
 if(ENABLE_SERVICES)
   foreach(program ${valhalla_services})
     add_executable(${program} src/${program}.cc)
