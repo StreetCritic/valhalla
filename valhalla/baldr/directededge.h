@@ -1,6 +1,7 @@
 #ifndef VALHALLA_BALDR_DIRECTEDEDGE_H_
 #define VALHALLA_BALDR_DIRECTEDEDGE_H_
 
+#include "midgard/logging.h"
 #include <cstdint>
 #include <valhalla/baldr/graphconstants.h>
 #include <valhalla/baldr/graphid.h>
@@ -224,18 +225,46 @@ public:
 
 
   /**
-   * Set bikeability (0-7)
+   * Set bike_comfort (0-7)
    */
-  void set_bikeability(const uint32_t grade);
+  void set_bike_comfort(const uint32_t grade);
 
   /**
-   * Get the bikeability grade.
-   * @return  Returns the bikeability grade (0-7).
+   * Get the bike_comfort grade.
+   * @return  Returns the bike_comfort grade (0-7).
    */
-  uint32_t bikeability() const {
-    // return bikeability_;
+  uint32_t bike_comfort() const {
+    // return bike_comfort_;
     return spare4_;
   }
+
+  /**
+   * Set bike_safety (0-7)
+   */
+  void set_bike_safety(const uint32_t grade);
+
+  /**
+   * Get the bike_safety grade.
+   * @return  Returns the bike_safety grade (0-7).
+   */
+  uint32_t bike_safety() const {
+    // return bike_safety_;
+    return truck_speed_;
+  }
+
+  /**
+   * Get the beauty grade.
+   * @return  Returns the beauty grade (0-7).
+   */
+  uint32_t beauty() const {
+    // return beauty_;
+    return lanecount_;
+  }
+
+  /**
+   * Set beauty (0-7)
+   */
+  void set_beauty(const uint32_t grade);
 
   /**
    * Get the road curvature factor.
@@ -560,7 +589,8 @@ public:
    * @return  Returns the number of lanes for this directed edge.
    */
   uint32_t lanecount() const {
-    return lanecount_;
+    return 1;
+    // return lanecount_;
   }
 
   /**
@@ -1324,6 +1354,14 @@ class DirectedEdgeExt {
 
 protected:
   uint64_t spare0_ : 64;
+  // uint64_t bikeability_ : 4;
+  // uint64_t bike_comfort_ : 4;
+  // uint64_t bike_safety_ : 4;
+  // uint64_t walkability_ : 4;
+  // uint64_t pedestrian_comfort_ : 4;
+  // uint64_t pedestrian_safety_ : 4;
+  // uint64_t beauty_ : 4;
+  // uint64_t spare0_ : 36;
 };
 
 } // namespace baldr

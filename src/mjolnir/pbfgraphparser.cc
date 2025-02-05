@@ -925,9 +925,25 @@ public:
         LOG_INFO("out_of_range thrown for way id: " + std::to_string(osmid_));
       }
     };
-    tag_handlers_["streetcritic:indicator:bikeability"] = [this]() {
+    tag_handlers_["streetcritic:indicator:bike_comfort"] = [this]() {
       try {
-        way_.set_bikeability(std::stof(tag_.second));
+        way_.set_bike_comfort(std::stof(tag_.second));
+      } catch (const std::out_of_range& oor) {
+        LOG_INFO("out_of_range thrown for way id: " + std::to_string(osmid_));
+      }
+    };
+    tag_handlers_["streetcritic:indicator:bike_safety"] = [this]() {
+      try {
+        way_.set_bike_safety(std::stof(tag_.second));
+        // LOG_WARN("safety set from indicator to " + tag_.second + " -> " +
+                 // std::to_string(way_.bike_safety()));
+      } catch (const std::out_of_range& oor) {
+        LOG_INFO("out_of_range thrown for way id: " + std::to_string(osmid_));
+      }
+    };
+    tag_handlers_["streetcritic:indicator:beauty"] = [this]() {
+      try {
+        way_.set_beauty(std::stof(tag_.second));
       } catch (const std::out_of_range& oor) {
         LOG_INFO("out_of_range thrown for way id: " + std::to_string(osmid_));
       }

@@ -1,4 +1,5 @@
 #include <boost/optional.hpp>
+#include <string>
 
 #include "baldr/graphconstants.h"
 #include "midgard/util.h"
@@ -68,6 +69,18 @@ constexpr float kMaxLivingStreetPenalty = 500.f;
 constexpr float kMinLivingStreetFactor = 0.8f;
 constexpr float kMaxLivingStreetFactor = 3.f;
 
+// min and max factors to apply when use pref comfort
+constexpr float kMinPrefComfortFactor = 0.8f;
+constexpr float kMaxPrefComfortFactor = 3.f;
+
+// min and max factors to apply when use pref beauty
+constexpr float kMinPrefBeautyFactor = 0.8f;
+constexpr float kMaxPrefBeautyFactor = 3.f;
+
+// min and max factors to apply when use pref safety
+constexpr float kMinPrefSafetyFactor = 0.8f;
+constexpr float kMaxPrefSafetyFactor = 3.f;
+
 // min factor to apply when use lit
 constexpr float kMinLitFactor = 1.f;
 
@@ -94,6 +107,9 @@ constexpr float kDefaultUseFerry = 0.5f;         // Default preference of using 
 constexpr float kDefaultUseRailFerry = 0.4f;     // Default preference of using a rail ferry 0-1
 constexpr float kDefaultUseTracks = 0.5f;        // Default preference of using tracks 0-1
 constexpr float kDefaultUseLivingStreets = 0.1f; // Default preference of using living streets 0-1
+constexpr float kDefaultUsePrefComfort = 0.5f;   // Default preference for using comfortable ways 0-1
+constexpr float kDefaultUsePrefBeauty = 0.5f;    // Default preference for using beautiful ways 0-1
+constexpr float kDefaultUsePrefSafety = 0.5f;    // Default preference for using safe ways 0-1
 constexpr float kDefaultUseLit = 0.f;            // Default preference of using lit ways 0-1
 
 // How much to avoid generic service roads.
@@ -130,10 +146,11 @@ BaseCostingOptionsConfig::BaseCostingOptionsConfig()
       rail_ferry_cost_{0.f, kDefaultRailFerryCost, kMaxPenalty},
       use_rail_ferry_{0.f, kDefaultUseRailFerry, 1.f}, service_penalty_{0.f, kDefaultServicePenalty,
                                                                         kMaxPenalty},
-      service_factor_{kMinFactor, kDefaultServiceFactor, kMaxFactor}, use_tracks_{0.f,
-                                                                                  kDefaultUseTracks,
-                                                                                  1.f},
-      use_living_streets_{0.f, kDefaultUseLivingStreets, 1.f}, use_lit_{0.f, kDefaultUseLit, 1.f},
+      service_factor_{kMinFactor, kDefaultServiceFactor, kMaxFactor},
+      use_tracks_{0.f, kDefaultUseTracks, 1.f}, use_living_streets_{0.f, kDefaultUseLivingStreets,
+                                                                    1.f},
+      use_pref_comfort_{0.f, kDefaultUsePrefComfort}, use_pref_beauty_{0.f, kDefaultUsePrefBeauty},
+      use_pref_safety_{0.f, kDefaultUsePrefSafety}, use_lit_{0.f, kDefaultUseLit, 1.f},
       closure_factor_{kClosureFactorRange}, exclude_unpaved_(false),
       exclude_cash_only_tolls_(false), include_hot_{false}, include_hov2_{false}, include_hov3_{
                                                                                       false} {
@@ -359,7 +376,45 @@ void DynamicCost::set_use_living_streets(float use_living_streets) {
              2.f * (1.f - use_living_streets) * (1.f - kMinLivingStreetFactor));
 }
 
+void DynamicCost::set_use_pref_comfort(float use_pref_comfort) {
+  // Calculate factor value based on use preference. Return value
+  // in range [kMaxPrefComfortFactor; 1], if use < 0.5; or
+  // in range [1; kMinPrefComfortFactor], if use > 0.5.
+  // Thus pref_comfort_factor_ is inversely proportional to use_pref_comfort.
+  pref_comfort_factor_ = use_pref_comfort;
+      // use_pref_comfort < 0.5f
+      //     ? (kMaxPrefComfortFactor - 2.f * use_pref_comfort * (kMaxPrefComfortFactor - 1.f))
+      //     : (kMinPrefComfortFactor + 2.f * (1.f - use_pref_comfort) * (1.f - kMinPrefComfortFactor));
+  // LOG_WARN("set_use_pref_comfort" + std::to_string(use_pref_comfort) + " " +
+  //          std::to_string(pref_comfort_factor_));
+}
+
+void DynamicCost::set_use_pref_beauty(float use_pref_beauty) {
+  // Calculate factor value based on use preference. Return value
+  // in range [kMaxPrefBeautyFactor; 1], if use < 0.5; or
+  // in range [1; kMinPrefBeautyFactor], if use > 0.5.
+  // Thus pref_beauty_factor_ is inversely proportional to use_pref_beauty.
+  pref_beauty_factor_ = use_pref_beauty;
+  //     use_pref_beauty < 0.5f
+  //         ? (kMaxPrefBeautyFactor - 2.f * use_pref_beauty * (kMaxPrefBeautyFactor - 1.f))
+  //         : (kMinPrefBeautyFactor + 2.f * (1.f - use_pref_beauty) * (1.f - kMinPrefBeautyFactor));
+  // LOG_WARN("set_use_pref_beauty" + std::to_string(use_pref_beauty) + " " + std::to_string(pref_beauty_factor_));
+}
+
+void DynamicCost::set_use_pref_safety(float use_pref_safety) {
+  // Calculate factor value based on use preference. Return value
+  // in range [kMaxPrefSafetyFactor; 1], if use < 0.5; or
+  // in range [1; kMinPrefSafetyFactor], if use > 0.5.
+  // Thus pref_safety_factor_ is inversely proportional to use_pref_safety.
+  pref_safety_factor_ = use_pref_safety;
+  //     use_pref_safety < 0.5f
+  //         ? (kMaxPrefSafetyFactor - 2.f * use_pref_safety * (kMaxPrefSafetyFactor - 1.f))
+  //         : (kMinPrefSafetyFactor + 2.f * (1.f - use_pref_safety) * (1.f - kMinPrefSafetyFactor));
+  // LOG_WARN("set_use_pref_safety" + std::to_string(use_pref_safety) + " " + std::to_string(pref_safety_factor_));
+}
+
 void DynamicCost::set_use_lit(float use_lit) {
+  LOG_WARN("set_use_lit" + std::to_string(use_lit));
   unlit_factor_ =
       use_lit < 0.5f ? kMinLitFactor + 2.f * use_lit : ((kMinLitFactor - 5.f) + 12.f * use_lit);
 }

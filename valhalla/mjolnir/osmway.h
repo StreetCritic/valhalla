@@ -1,6 +1,7 @@
 #ifndef VALHALLA_MJOLNIR_PBFGRAPHBUILDER_OSMWAY_H
 #define VALHALLA_MJOLNIR_PBFGRAPHBUILDER_OSMWAY_H
 
+#include "midgard/logging.h"
 #include <cstdint>
 #include <cstring>
 #include <map>
@@ -109,10 +110,21 @@ struct OSMWay {
     return forward_speed_;
   }
 
-  void set_bikeability(const float bikeability);
+  void set_bike_comfort(const float bike_comfort);
+  void set_bike_safety(const float bike_safety);
+  void set_beauty(const float beauty);
 
-  uint8_t bikeability() const {
-    return bikeability_;
+  uint8_t bike_comfort() const {
+    // LOG_WARN("osmway::bikeability" + std::to_string(bikeability_));
+    return bike_comfort_;
+  }
+  uint8_t bike_safety() const {
+    // LOG_WARN("osmway::bikeability" + std::to_string(bikeability_));
+    return bike_safety_;
+  }
+  uint8_t beauty() const {
+    // LOG_WARN("osmway::bikeability" + std::to_string(bikeability_));
+    return beauty_;
   }
 
   /**
@@ -2740,7 +2752,10 @@ struct OSMWay {
   // layer index(Z-level) of the way relatively to other levels
   int8_t layer_;
 
-  uint8_t bikeability_;
+  // Way ratings
+  uint8_t bike_comfort_;
+  uint8_t bike_safety_;
+  uint8_t beauty_;
 };
 
 } // namespace mjolnir

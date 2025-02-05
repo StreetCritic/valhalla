@@ -967,6 +967,24 @@ protected:
   virtual void set_use_living_streets(float use_living_streets);
 
   /**
+   * Calculate way costs based on comfort preference.
+   * @param use_pref_comfort value of comfortable way preference in range [0; 1]
+   */
+  virtual void set_use_pref_comfort(float use_pref_comfort);
+
+  /**
+   * Calculate way costs based on beauty preference.
+   * @param use_pref_beauty value of beautiful way preference in range [0; 1]
+   */
+  virtual void set_use_pref_beauty(float use_pref_beauty);
+
+  /**
+   * Calculate way costs based on safety preference.
+   * @param use_pref_safety value of safe way preference in range [0; 1]
+   */
+  virtual void set_use_pref_safety(float use_pref_safety);
+
+  /**
    * Calculate `lit` costs based on lit preference.
    * @param use_lit value of lit preference in range [0; 1]
    */
@@ -1001,6 +1019,9 @@ protected:
   float ferry_factor_, rail_ferry_factor_;
   float track_factor_;         // Avoid tracks factor.
   float living_street_factor_; // Avoid living streets factor.
+  float pref_comfort_factor_;  // Use comfortable streets factor.
+  float pref_beauty_factor_;   // Use beautiful streets factor.
+  float pref_safety_factor_;   // Use safe streets factor.
   float service_factor_;       // Avoid service roads factor.
   float closure_factor_;       // Avoid closed edges factor.
   float unlit_factor_;         // Avoid unlit edges factor.
@@ -1063,6 +1084,7 @@ protected:
    * @param costing_options Protocol buffer of costing options.
    */
   void get_base_costs(const Costing& costing) {
+    LOG_WARN("get_base_costs");
     const auto& costing_options = costing.options();
     // Cost only (no time) penalties
     alley_penalty_ = costing_options.alley_penalty();
@@ -1131,6 +1153,23 @@ protected:
 
     // Get living street factor from costing options.
     set_use_living_streets(costing_options.use_living_streets());
+
+    // Get comfort pref factor from costing options.
+    // TODO
+    set_use_pref_comfort(costing_options.use_ferry());
+
+    // TODO
+    // Get beauty pref factor from costing options.
+    set_use_pref_beauty(costing_options.use_lit());
+
+    // LOG_WARN("costing options use_pref_safety" + std::to_string(costing_options.use_pref_safety()));
+    // LOG_WARN("costing options use_truck_route" + std::to_string(costing_options.use_truck_route()));
+    // LOG_WARN("costing options use_lit" + std::to_string(costing_options.use_lit()));
+    // LOG_WARN("costing options use_tolls" + std::to_string(costing_options.use_tolls()));
+
+    // Get safety pref factor from costing options.
+    // TODO set_use_pref_safety(costing_options.use_pref_safety());
+    set_use_pref_safety(costing_options.use_roads());
 
     // Calculate lit factor from costing options.
     set_use_lit(costing_options.use_lit());
@@ -1254,6 +1293,9 @@ struct BaseCostingOptionsConfig {
 
   ranged_default_t<float> use_tracks_;
   ranged_default_t<float> use_living_streets_;
+  ranged_default_t<float> use_pref_comfort_;
+  ranged_default_t<float> use_pref_beauty_;
+  ranged_default_t<float> use_pref_safety_;
   ranged_default_t<float> use_lit_;
 
   ranged_default_t<float> closure_factor_;

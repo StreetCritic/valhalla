@@ -282,6 +282,7 @@ void DirectedEdge::set_truck_route(const bool truck_route) {
 
 // Sets the number of lanes
 void DirectedEdge::set_lanecount(const uint32_t lanecount) {
+  return;
   // Make sure we don't exceed max lane count. Also make sure lane count
   // is at least 1.
   if (lanecount > kMaxLaneCount) {
@@ -362,6 +363,7 @@ void DirectedEdge::set_speed(const uint32_t speed) {
 
 // Sets the truck speed in KPH.
 void DirectedEdge::set_truck_speed(const uint32_t speed) {
+  return;
   if (speed > kMaxAssumedSpeed) {
     LOG_WARN("Exceeding maximum.  Truck speed: " + std::to_string(speed));
     truck_speed_ = kMaxAssumedSpeed;
@@ -567,12 +569,30 @@ void DirectedEdge::set_max_up_slope(const float slope) {
   }
 }
 
-void DirectedEdge::set_bikeability(const uint32_t grade) {
+void DirectedEdge::set_bike_comfort(const uint32_t grade) {
   if (grade > 7) {
-    LOG_ERROR("Exceeding max. bikeability grade: " + std::to_string(grade));
+    LOG_ERROR("Exceeding max. bike_comfort grade: " + std::to_string(grade));
   } else {
-    // bikeability_ = grade;
+    // bike_comfort_ = grade;
     spare4_ = grade;
+  }
+}
+
+void DirectedEdge::set_bike_safety(const uint32_t grade) {
+  if (grade > 7) {
+    LOG_ERROR("Exceeding max. bike_safety grade: " + std::to_string(grade));
+  } else {
+    // bike_safety_ = grade;
+    truck_speed_ = grade;
+  }
+}
+
+void DirectedEdge::set_beauty(const uint32_t grade) {
+  if (grade > 7) {
+    LOG_ERROR("Exceeding max. beauty grade: " + std::to_string(grade));
+  } else {
+    // beauty_ = grade;
+    lanecount_ = grade;
   }
 }
 
@@ -611,7 +631,9 @@ json::MapPtr DirectedEdge::json() const {
       //{"opp_index", static_cast<bool>(opp_index_)},
       //{"edge_info_offset", static_cast<uint64_t>(edgeinfo_offset_)},
       //{"restrictions", restrictions_},
-      {"bikeability", static_cast<uint64_t>(spare4_)},
+      {"bike_comfort", static_cast<uint64_t>(spare4_)},
+      {"bike_safety", static_cast<uint64_t>(truck_speed_)},
+      {"beauty", static_cast<uint64_t>(lanecount_)},
       // {"bikeability", static_cast<uint64_t>(bikeability_)},
       {"access_restriction", static_cast<bool>(access_restriction_)},
       {"start_restriction", access_json(start_restriction_)},

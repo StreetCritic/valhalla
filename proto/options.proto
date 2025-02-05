@@ -317,6 +317,15 @@ message Costing {
       float hgv_no_access_penalty = 85;
     }
     float use_truck_route = 86;
+//    oneof has_use_pref_comfort {
+      float use_pref_comfort = 87;
+//    }
+//    oneof has_use_pref_beauty {
+      float use_pref_beauty = 88;
+//    }
+//    oneof has_use_pref_safety {
+      float use_pref_safety = 89;
+//    }
   }
 
   oneof has_options {

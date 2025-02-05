@@ -4,6 +4,7 @@
 #include "baldr/graphconstants.h"
 #include "baldr/nodeinfo.h"
 #include "midgard/constants.h"
+#include "midgard/logging.h"
 #include "midgard/util.h"
 #include "proto_conversions.h"
 #include "sif/costconstants.h"
@@ -34,6 +35,9 @@ constexpr float kDefaultBssPenalty = 0.0f;    // Seconds
 constexpr float kDefaultUseRoad = 0.25f;          // Factor between 0 and 1
 constexpr float kDefaultAvoidBadSurfaces = 0.25f; // Factor between 0 and 1
 constexpr float kDefaultUseLivingStreets = 0.5f;  // Factor between 0 and 1
+constexpr float kDefaultUsePrefComfort = 0.5f;    // Factor between 0 and 1
+constexpr float kDefaultUsePrefBeauty = 0.5f;     // Factor between 0 and 1
+constexpr float kDefaultUsePrefSafety = 0.5f;     // Factor between 0 and 1
 const std::string kDefaultBicycleType = "Hybrid"; // Bicycle type
 
 // Default turn costs - modified by the stop impact.
@@ -214,6 +218,9 @@ BaseCostingOptionsConfig GetBaseCostOptsConfig() {
   cfg.disable_toll_booth_ = true;
   cfg.disable_rail_ferry_ = true;
   cfg.use_living_streets_.def = kDefaultUseLivingStreets;
+  cfg.use_pref_comfort_.def = kDefaultUsePrefComfort;
+  cfg.use_pref_beauty_.def = kDefaultUsePrefBeauty;
+  cfg.use_pref_safety_.def = kDefaultUsePrefSafety;
   return cfg;
 }
 
@@ -445,6 +452,10 @@ BicycleCost::BicycleCost(const Costing& costing)
   // Get the base costs
   get_base_costs(costing);
 
+  LOG_WARN("pref comfort is " + std::to_string(pref_comfort_factor_));
+  LOG_WARN("pref beauty is " + std::to_string(pref_beauty_factor_));
+  LOG_WARN("pref safety is " + std::to_string(pref_safety_factor_));
+
   // Get the bicycle type - enter as string and convert to enum
   const std::string& bicycle_type = costing_options.transport_type();
   if (bicycle_type == "Cross") {
@@ -670,15 +681,15 @@ Cost BicycleCost::EdgeCost(const baldr::DirectedEdge* edge,
 
   // Create an edge factor based on total stress (sum of accommodation factor and roadway
   // stress) and the weighted grade penalty for the edge.
-  float factor =
-      1.0f + grade_penalty[edge->weighted_grade()] + (accommodation_factor * roadway_stress);
+  // float factor =
+  //     1.0f + grade_penalty[edge->weighted_grade()] + (accommodation_factor * roadway_stress);
 
   // If surface is worse than the minimum we add a surface factor
-  if (edge->surface() >= minimal_surface_penalized_) {
-    factor +=
-        avoid_bad_surfaces_ * kSurfaceFactors[static_cast<uint32_t>(edge->surface()) -
-                                              static_cast<uint32_t>(minimal_surface_penalized_)];
-  }
+  // if (edge->surface() >= minimal_surface_penalized_) {
+  //   factor +=
+  //       avoid_bad_surfaces_ * kSurfaceFactors[static_cast<uint32_t>(edge->surface()) -
+  //                                             static_cast<uint32_t>(minimal_surface_penalized_)];
+  // }
 
   // Compute bicycle speed. If you have to dismount on the edge then set speed to an average
   // walking speed. Otherwise, set speed based on surface factor and grade. Lower bike speed
@@ -693,7 +704,21 @@ Cost BicycleCost::EdgeCost(const baldr::DirectedEdge* edge,
 
   // Compute elapsed time based on speed. Modulate cost with weighting factors.
   float sec = (edge->length() * speedfactor_[bike_speed]);
-  return {shortest_ ? edge->length() : sec * (7-edge->bikeability()), sec};
+
+  float factor = 1.0;
+  factor += pref_comfort_factor_ * (7 - edge->bike_comfort());
+  factor += pref_safety_factor_ * (7 - edge->bike_safety());
+  factor += pref_beauty_factor_ * (7 - edge->beauty());
+  // LOG_WARN("pref_comfort_factor" + std::to_string(pref_comfort_factor_));
+  // LOG_WARN("comfort" + std::to_string(7 - edge->bike_comfort()));
+  // LOG_WARN("pref_safety_factor" + std::to_string(pref_safety_factor_));
+  // LOG_WARN("safety" + std::to_string(7 - edge->bike_safety()));
+  // LOG_WARN("pref_beauty_factor" + std::to_string(pref_beauty_factor_));
+  // LOG_WARN("beauty" + std::to_string(7 - edge->beauty()));
+  // LOG_WARN("factor" + std::to_string(factor));
+  // LOG_WARN("factor * sec" + std::to_string(factor * sec));
+
+  return {shortest_ ? edge->length() : sec * factor, sec};
 }
 
 // Returns the time (in seconds) to make the transition from the predecessor

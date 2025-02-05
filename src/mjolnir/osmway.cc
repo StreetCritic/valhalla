@@ -103,15 +103,24 @@ void OSMWay::set_forward_speed(const float forward_speed) {
 }
 
 // Sets the bikeability.
-void OSMWay::set_bikeability(const float bikeability) {
-  // if (speed > kMaxOSMSpeed) {
-  //   LOG_WARN("Exceeded max truck speed for way id: " + std::to_string(osmwayid_));
-  //   truck_speed_ = kMaxOSMSpeed;
-  // } else {
+void OSMWay::set_bike_comfort(const float bike_comfort) {
   float min_value = 0.0f;
   float max_value = 1.0f;
-  bikeability_ = (uint64_t)roundf((bikeability - min_value) / (max_value - min_value) * 7.0f);
-  // }
+  bike_comfort_ = (uint64_t)roundf((bike_comfort - min_value) / (max_value - min_value) * 7.0f);
+}
+
+// Sets the bike safety.
+void OSMWay::set_bike_safety(const float bike_safety) {
+  float min_value = 0.0f;
+  float max_value = 1.0f;
+  bike_safety_ = (uint64_t)roundf((bike_safety - min_value) / (max_value - min_value) * 7.0f);
+}
+
+// Sets the beauty.
+void OSMWay::set_beauty(const float beauty) {
+  float min_value = 0.0f;
+  float max_value = 1.0f;
+  beauty_ = (uint64_t)roundf((beauty - min_value) / (max_value - min_value) * 7.0f);
 }
 
 // Sets the truck speed in KPH.
